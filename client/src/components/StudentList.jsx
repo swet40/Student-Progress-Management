@@ -9,6 +9,16 @@ function StudentList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [exporting, setExporting] = useState(false);
+    
+    // Modal states
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showBulkUpdateModal, setShowBulkUpdateModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     useEffect(() => {
         fetchStudents();
@@ -28,16 +38,35 @@ function StudentList() {
         }
     };
 
-    const handleDelete = async (id, name) => {
-        if (window.confirm(`Are you sure you want to delete ${name}?`)) {
-            try {
-                await studentAPI.deleteStudent(id);
-                setStudents(students.filter(student => student._id !== id));
-                alert('Student deleted successfully!');
-            } catch (err) {
-                alert('Failed to delete student');
-                console.error('Error deleting student:', err);
-            }
+    const showSuccess = (message) => {
+        setModalMessage(message);
+        setShowSuccessModal(true);
+    };
+
+    const showError = (message) => {
+        setModalMessage(message);
+        setShowErrorModal(true);
+    };
+
+    const handleDeleteClick = (student) => {
+        setSelectedStudent(student);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            setIsProcessing(true);
+            await studentAPI.deleteStudent(selectedStudent._id);
+            setStudents(students.filter(student => student._id !== selectedStudent._id));
+            setShowDeleteModal(false);
+            showSuccess('Student deleted successfully!');
+        } catch (err) {
+            setShowDeleteModal(false);
+            showError('Failed to delete student. Please try again.');
+            console.error('Error deleting student:', err);
+        } finally {
+            setIsProcessing(false);
+            setSelectedStudent(null);
         }
     };
 
@@ -57,61 +86,124 @@ function StudentList() {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
             
-            alert('CSV exported successfully!');
+            showSuccess('CSV exported successfully!');
         } catch (err) {
-            alert('Failed to export CSV');
+            showError('Failed to export CSV. Please try again.');
             console.error('Error exporting CSV:', err);
         } finally {
             setExporting(false);
         }
     };
 
-    const handleUpdateRating = async (studentId, name) => {
-        if (window.confirm(`Update rating for ${name} from Codeforces?`)) {
-            try {
-                const response = await studentAPI.updateStudentRating(studentId);
-                
-                console.log('Full API response:', response);
-                console.log('Response data:', response.data);
-                
-                alert('Rating updated successfully!');
-                
-                // Check if student data exists in response
-                if (response.data && response.data.student) {
-                    const updatedStudent = response.data.student;
-                    console.log('Updated student:', updatedStudent);
+    const handleUpdateRatingClick = (student) => {
+        setSelectedStudent(student);
+        setShowUpdateModal(true);
+    };
 
-                    setStudents(prevStudents => 
-                        prevStudents.map(student => 
-                            student._id === studentId ? updatedStudent : student
-                        )
-                    );
-                } else {
-                    // If no student data in response, refetch all students
-                    console.log('No student data in response, refetching all students');
-                    fetchStudents();
-                }
-            } catch (err) {
-                alert('Failed to update rating');
-                console.error('Error updating rating:', err);
+    const handleUpdateRatingConfirm = async () => {
+        try {
+            setIsProcessing(true);
+            const response = await studentAPI.updateStudentRating(selectedStudent._id);
+            
+            console.log('Full API response:', response);
+            console.log('Response data:', response.data);
+            
+            // Check if student data exists in response
+            if (response.data && response.data.student) {
+                const updatedStudent = response.data.student;
+                console.log('Updated student:', updatedStudent);
+
+                setStudents(prevStudents => 
+                    prevStudents.map(student => 
+                        student._id === selectedStudent._id ? updatedStudent : student
+                    )
+                );
+            } else {
+                // If no student data in response, refetch all students
+                console.log('No student data in response, refetching all students');
+                fetchStudents();
             }
+            
+            setShowUpdateModal(false);
+            showSuccess('Rating updated successfully!');
+        } catch (err) {
+            setShowUpdateModal(false);
+            showError('Failed to update rating. Please try again.');
+            console.error('Error updating rating:', err);
+        } finally {
+            setIsProcessing(false);
+            setSelectedStudent(null);
         }
     };
 
-    const handleBulkUpdateRatings = async () => {
-        if (window.confirm('Update ratings for all students? This may take a while.')) {
-            try {
-                setLoading(true);
-                await studentAPI.updateAllRatings();
-                alert('All ratings updated successfully!');
-                fetchStudents();
-            } catch (err) {
-                alert('Failed to update ratings');
-                console.error('Error updating ratings:', err);
-            } finally {
-                setLoading(false);
-            }
+    const handleBulkUpdateClick = () => {
+        setShowBulkUpdateModal(true);
+    };
+
+    const handleBulkUpdateConfirm = async () => {
+        try {
+            setIsProcessing(true);
+            setLoading(true);
+            await studentAPI.updateAllRatings();
+            fetchStudents();
+            setShowBulkUpdateModal(false);
+            showSuccess('All ratings updated successfully!');
+        } catch (err) {
+            setShowBulkUpdateModal(false);
+            showError('Failed to update ratings. Please try again.');
+            console.error('Error updating ratings:', err);
+        } finally {
+            setIsProcessing(false);
+            setLoading(false);
         }
+    };
+
+    // Modal Component
+    const Modal = ({ show, onClose, children, title }) => {
+        if (!show) return null;
+
+        const modalOverlayStyles = {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            backdropFilter: 'blur(4px)'
+        };
+
+        const modalContentStyles = {
+            backgroundColor: theme.card.background,
+            padding: '30px',
+            borderRadius: '12px',
+            border: `1px solid ${theme.border.primary}`,
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            minWidth: '400px',
+            maxWidth: '500px',
+            position: 'relative'
+        };
+
+        return (
+            <div style={modalOverlayStyles} onClick={onClose}>
+                <div style={modalContentStyles} onClick={(e) => e.stopPropagation()}>
+                    {title && (
+                        <h3 style={{ 
+                            margin: '0 0 20px 0', 
+                            color: theme.text.primary,
+                            fontSize: '1.2rem',
+                            fontWeight: '600'
+                        }}>
+                            {title}
+                        </h3>
+                    )}
+                    {children}
+                </div>
+            </div>
+        );
     };
 
     // Theme-aware styles
@@ -149,6 +241,35 @@ function StudentList() {
         fontSize: '14px',
         fontWeight: '500',
         transition: 'all 0.2s ease'
+    };
+
+    const modalButtonStyles = {
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: '500',
+        transition: 'all 0.2s ease',
+        minWidth: '80px'
+    };
+
+    const primaryButtonStyles = {
+        ...modalButtonStyles,
+        backgroundColor: theme.button.primary.background,
+        color: theme.button.primary.text
+    };
+
+    const dangerButtonStyles = {
+        ...modalButtonStyles,
+        backgroundColor: theme.button.danger.background,
+        color: theme.button.danger.text
+    };
+
+    const secondaryButtonStyles = {
+        ...modalButtonStyles,
+        backgroundColor: theme.button.secondary.background,
+        color: theme.button.secondary.text
     };
 
     const updateAllButtonStyles = {
@@ -247,7 +368,7 @@ function StudentList() {
                 <h2 style={titleStyles}>All Students ({students.length})</h2>
                 <div style={buttonGroupStyles}>
                     <button
-                        onClick={handleBulkUpdateRatings}
+                        onClick={handleBulkUpdateClick}
                         disabled={loading || students.length === 0}
                         style={updateAllButtonStyles}
                         onMouseEnter={(e) => {
@@ -400,7 +521,7 @@ function StudentList() {
                                                 Details
                                             </Link>
                                             <button 
-                                                onClick={() => handleUpdateRating(student._id, student.name)} 
+                                                onClick={() => handleUpdateRatingClick(student)} 
                                                 style={{ 
                                                     ...actionButtonStyles,
                                                     backgroundColor: theme.button.warning.background,
@@ -416,7 +537,7 @@ function StudentList() {
                                                 Update
                                             </button>
                                             <button 
-                                                onClick={() => handleDelete(student._id, student.name)} 
+                                                onClick={() => handleDeleteClick(student)} 
                                                 style={{ 
                                                     ...actionButtonStyles,
                                                     backgroundColor: theme.button.danger.background,
@@ -439,6 +560,214 @@ function StudentList() {
                     </table>
                 </div>
             )}
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                show={showDeleteModal}
+                onClose={() => !isProcessing && setShowDeleteModal(false)}
+                title="Confirm Delete"
+            >
+                <p style={{ color: theme.text.primary, marginBottom: '20px', lineHeight: '1.5' }}>
+                    Are you sure you want to delete <strong>{selectedStudent?.name}</strong>? 
+                    This action cannot be undone.
+                </p>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <button
+                        onClick={() => setShowDeleteModal(false)}
+                        disabled={isProcessing}
+                        style={secondaryButtonStyles}
+                        onMouseEnter={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.secondary.hover;
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.secondary.background;
+                            }
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleDeleteConfirm}
+                        disabled={isProcessing}
+                        style={{
+                            ...dangerButtonStyles,
+                            opacity: isProcessing ? 0.6 : 1,
+                            cursor: isProcessing ? 'not-allowed' : 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.danger.hover;
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.danger.background;
+                            }
+                        }}
+                    >
+                        {isProcessing ? 'Deleting...' : 'Delete'}
+                    </button>
+                </div>
+            </Modal>
+
+            {/* Update Rating Confirmation Modal */}
+            <Modal
+                show={showUpdateModal}
+                onClose={() => !isProcessing && setShowUpdateModal(false)}
+                title="Update Rating"
+            >
+                <p style={{ color: theme.text.primary, marginBottom: '20px', lineHeight: '1.5' }}>
+                    Update rating for <strong>{selectedStudent?.name}</strong> from Codeforces?
+                    This will fetch the latest rating data.
+                </p>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <button
+                        onClick={() => setShowUpdateModal(false)}
+                        disabled={isProcessing}
+                        style={secondaryButtonStyles}
+                        onMouseEnter={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.secondary.hover;
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.secondary.background;
+                            }
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleUpdateRatingConfirm}
+                        disabled={isProcessing}
+                        style={{
+                            ...primaryButtonStyles,
+                            opacity: isProcessing ? 0.6 : 1,
+                            cursor: isProcessing ? 'not-allowed' : 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.primary.hover;
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.primary.background;
+                            }
+                        }}
+                    >
+                        {isProcessing ? 'Updating...' : 'Update'}
+                    </button>
+                </div>
+            </Modal>
+
+            {/* Bulk Update Confirmation Modal */}
+            <Modal
+                show={showBulkUpdateModal}
+                onClose={() => !isProcessing && setShowBulkUpdateModal(false)}
+                title="Update All Ratings"
+            >
+                <p style={{ color: theme.text.primary, marginBottom: '20px', lineHeight: '1.5' }}>
+                    Update ratings for all students? This may take a while as it fetches 
+                    the latest data from Codeforces for each student.
+                </p>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <button
+                        onClick={() => setShowBulkUpdateModal(false)}
+                        disabled={isProcessing}
+                        style={secondaryButtonStyles}
+                        onMouseEnter={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.secondary.hover;
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.secondary.background;
+                            }
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleBulkUpdateConfirm}
+                        disabled={isProcessing}
+                        style={{
+                            ...primaryButtonStyles,
+                            opacity: isProcessing ? 0.6 : 1,
+                            cursor: isProcessing ? 'not-allowed' : 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.primary.hover;
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isProcessing) {
+                                e.target.style.backgroundColor = theme.button.primary.background;
+                            }
+                        }}
+                    >
+                        {isProcessing ? 'Updating...' : 'Update All'}
+                    </button>
+                </div>
+            </Modal>
+
+            {/* Success Modal */}
+            <Modal
+                show={showSuccessModal}
+                onClose={() => setShowSuccessModal(false)}
+                title="Success"
+            >
+                <div style={{ textAlign: 'center' }}>
+                    {/* <div style={{ fontSize: '3rem', marginBottom: '15px' }}>✅</div> */}
+                    <p style={{ color: theme.text.primary, marginBottom: '20px', lineHeight: '1.5' }}>
+                        {modalMessage}
+                    </p>
+                    <button
+                        onClick={() => setShowSuccessModal(false)}
+                        style={primaryButtonStyles}
+                        onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = theme.button.primary.hover;
+                        }}
+                        onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = theme.button.primary.background;
+                        }}
+                    >
+                        OK
+                    </button>
+                </div>
+            </Modal>
+
+            {/* Error Modal */}
+            <Modal
+                show={showErrorModal}
+                onClose={() => setShowErrorModal(false)}
+                title="Error"
+            >
+                <div style={{ textAlign: 'center' }}>
+                    {/* <div style={{ fontSize: '3rem', marginBottom: '15px' }}>❌</div> */}
+                    <p style={{ color: theme.text.primary, marginBottom: '20px', lineHeight: '1.5' }}>
+                        {modalMessage}
+                    </p>
+                    <button
+                        onClick={() => setShowErrorModal(false)}
+                        style={dangerButtonStyles}
+                        onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = theme.button.danger.hover;
+                        }}
+                        onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = theme.button.danger.background;
+                        }}
+                    >
+                        OK
+                    </button>
+                </div>
+            </Modal>
         </div>
     );
 }

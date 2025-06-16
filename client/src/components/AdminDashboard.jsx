@@ -34,9 +34,20 @@ function AdminDashboard() {
     const fetchSchedules = async () => {
         try {
             const response = await cronAPI.getSchedules();
-            setSchedules(response.data);
+            console.log('Schedules response:', response.data);
+            setSchedules(response.data || {});
         } catch (error) {
             console.error('Error fetching schedules:', error);
+            // Set default schedules if API fails
+            setSchedules({
+                'every_hour': '0 * * * *',
+                'every_2_hours': '0 */2 * * *',
+                'every_6_hours': '0 */6 * * *',
+                'daily_2am': '0 2 * * *',
+                'daily_midnight': '0 0 * * *',
+                'twice_daily': '0 0,12 * * *',
+                'weekly': '0 2 * * 0'
+            });
         }
     };
 
@@ -395,7 +406,7 @@ function AdminDashboard() {
                 <div style={{ marginBottom: '25px' }}>
                     <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: theme.text.primary }}>Quick Schedules</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
-                        {Object.entries(schedules).map(([name, schedule]) => (
+                        {Object.keys(schedules).length > 0 ? Object.entries(schedules).map(([name, schedule]) => (
                             <button
                                 key={name}
                                 onClick={() => handleStartCron(schedule)}
@@ -411,10 +422,40 @@ function AdminDashboard() {
                                     {name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                                 </div>
                                 <div style={{ fontSize: '12px', color: theme.text.secondary, fontFamily: 'monospace' }}>
-                                    {schedule}
+                                    {schedule || 'Schedule not available'}
                                 </div>
                             </button>
-                        ))}
+                        )) : (
+                            // Default schedules if API doesn't return data
+                            [
+                                { name: 'Every Hour', schedule: '0 * * * *' },
+                                { name: 'Every 2 Hours', schedule: '0 */2 * * *' },
+                                { name: 'Every 6 Hours', schedule: '0 */6 * * *' },
+                                { name: 'Daily 2am', schedule: '0 2 * * *' },
+                                { name: 'Daily Midnight', schedule: '0 0 * * *' },
+                                { name: 'Twice Daily', schedule: '0 0,12 * * *' },
+                                { name: 'Weekly', schedule: '0 2 * * 0' }
+                            ].map(({ name, schedule }) => (
+                                <button
+                                    key={name}
+                                    onClick={() => handleStartCron(schedule)}
+                                    style={quickScheduleButtonStyles}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = theme.background.tertiary;
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = theme.background.secondary;
+                                    }}
+                                >
+                                    <div style={{ fontWeight: '600', marginBottom: '4px' }}>
+                                        {name}
+                                    </div>
+                                    <div style={{ fontSize: '12px', color: theme.text.secondary, fontFamily: 'monospace' }}>
+                                        {schedule}
+                                    </div>
+                                </button>
+                            ))
+                        )}
                     </div>
                 </div>
 

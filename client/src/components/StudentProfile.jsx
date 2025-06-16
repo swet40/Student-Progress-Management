@@ -316,9 +316,9 @@ function StudentProfile() {
                 </Link>
                 <h1 style={titleStyles}>{student.name}</h1>
                 <div style={infoRowStyles}>
-                    <span>📧 {student.email}</span>
-                    <span>📱 {student.phone}</span>
-                    <span>💻 {student.codeforcesHandle}</span>
+                    <span><i class="fa-solid fa-envelope"></i> &nbsp; {student.email}</span>
+                    <span><i class="fa-solid fa-mobile-screen"></i> &nbsp; {student.phone}</span>
+                    <span><i class="fa-solid fa-laptop"></i> &nbsp; {student.codeforcesHandle}</span>
                     <span style={{ color: theme.button.success.background }}>
                         📊 Current: {student.currentRating ?? 'Not set'}
                     </span>
