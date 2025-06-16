@@ -13,9 +13,20 @@ function Home() {
     });
     const [recentActivity, setRecentActivity] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         fetchDashboardData();
+        
+        // Check if mobile on mount and resize
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
     const fetchDashboardData = async () => {
@@ -43,7 +54,7 @@ function Home() {
         }
     };
 
-    // Theme-aware styles
+    // Theme-aware styles with mobile responsiveness
     const containerStyles = {
         backgroundColor: theme.background.primary,
         color: theme.text.primary,
@@ -53,7 +64,7 @@ function Home() {
 
     const heroSectionStyles = {
         background: `linear-gradient(135deg, ${theme.button.primary.background} 0%, ${theme.button.primary.hover || theme.button.primary.background} 100%)`,
-        padding: '80px 40px',
+        padding: isMobile ? '60px 20px' : '80px 40px',
         textAlign: 'center',
         color: 'white',
         position: 'relative',
@@ -61,29 +72,32 @@ function Home() {
     };
 
     const heroContentStyles = {
-        maxWidth: '800px',
+        maxWidth: isMobile ? 'none' : '800px',
         margin: '0 auto',
         position: 'relative',
-        zIndex: 2
+        zIndex: 2,
+        width: isMobile ? '100%' : 'auto'
     };
 
     const heroTitleStyles = {
-        fontSize: '3.5rem',
+        fontSize: isMobile ? '2.5rem' : '3.5rem',
         fontWeight: '700',
         marginBottom: '20px',
-        textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+        textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+        lineHeight: '1.2'
     };
 
     const heroSubtitleStyles = {
-        fontSize: '1.3rem',
+        fontSize: isMobile ? '1.1rem' : '1.3rem',
         marginBottom: '40px',
         opacity: 0.9,
-        lineHeight: '1.6'
+        lineHeight: '1.6',
+        padding: isMobile ? '0 10px' : '0'
     };
 
     const ctaButtonStyles = {
-        padding: '15px 30px',
-        fontSize: '18px',
+        padding: isMobile ? '12px 24px' : '15px 30px',
+        fontSize: isMobile ? '16px' : '18px',
         fontWeight: '600',
         backgroundColor: 'rgba(255,255,255,0.2)',
         color: 'white',
@@ -96,64 +110,72 @@ function Home() {
     };
 
     const mainContentStyles = {
-        maxWidth: '1200px',
+        maxWidth: isMobile ? 'none' : '1200px',
         margin: '0 auto',
-        padding: '60px 20px'
+        padding: isMobile ? '40px 20px' : '60px 20px',
+        width: isMobile ? '100%' : 'auto'
     };
 
     const statsGridStyles = {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '30px',
-        marginBottom: '60px'
+        gridTemplateColumns: isMobile 
+            ? 'repeat(2, 1fr)' 
+            : 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: isMobile ? '12px' : '30px',
+        marginBottom: isMobile ? '40px' : '60px'
     };
 
     const statCardStyles = {
         backgroundColor: theme.card.background,
-        padding: '30px',
-        borderRadius: '16px',
+        padding: isMobile ? '16px 12px' : '30px',
+        borderRadius: isMobile ? '12px' : '16px',
         border: `1px solid ${theme.border.primary}`,
         boxShadow: theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)',
         textAlign: 'center',
         transition: 'all 0.3s ease',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        minHeight: isMobile ? '100px' : 'auto'
     };
 
     const statNumberStyles = {
-        fontSize: '2.5rem',
+        fontSize: isMobile ? '1.6rem' : '2.5rem',
         fontWeight: '700',
-        marginBottom: '10px',
-        color: theme.button.primary.background, // Use solid color instead of gradient
-        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        marginBottom: isMobile ? '5px' : '10px',
+        color: theme.button.primary.background,
+        textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        lineHeight: '1.2'
     };
 
     const statLabelStyles = {
         color: theme.text.secondary,
-        fontSize: '16px',
+        fontSize: isMobile ? '11px' : '16px',
         fontWeight: '500',
         textTransform: 'uppercase',
-        letterSpacing: '0.5px'
+        letterSpacing: '0.5px',
+        lineHeight: isMobile ? '1.3' : '1.4'
     };
 
     const sectionTitleStyles = {
-        fontSize: '2rem',
+        fontSize: isMobile ? '1.6rem' : '2rem',
         fontWeight: '600',
-        marginBottom: '30px',
+        marginBottom: isMobile ? '20px' : '30px',
         color: theme.text.primary,
         textAlign: 'center'
     };
 
     const featuresGridStyles = {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '30px',
-        marginBottom: '60px'
+        gridTemplateColumns: isMobile 
+            ? '1fr' 
+            : 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: isMobile ? '20px' : '30px',
+        marginBottom: isMobile ? '40px' : '60px'
     };
 
     const featureCardStyles = {
         backgroundColor: theme.card.background,
-        padding: '40px 30px',
+        padding: isMobile ? '30px 20px' : '40px 30px',
         borderRadius: '16px',
         border: `1px solid ${theme.border.primary}`,
         boxShadow: theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)',
@@ -162,13 +184,13 @@ function Home() {
     };
 
     const featureIconStyles = {
-        fontSize: '3rem',
+        fontSize: isMobile ? '2.5rem' : '3rem',
         marginBottom: '20px',
         display: 'block'
     };
 
     const featureTitleStyles = {
-        fontSize: '1.3rem',
+        fontSize: isMobile ? '1.2rem' : '1.3rem',
         fontWeight: '600',
         marginBottom: '15px',
         color: theme.text.primary
@@ -176,34 +198,65 @@ function Home() {
 
     const featureDescStyles = {
         color: theme.text.secondary,
-        lineHeight: '1.6'
+        lineHeight: '1.6',
+        fontSize: isMobile ? '14px' : '16px'
     };
 
     const activitySectionStyles = {
         backgroundColor: theme.card.background,
         border: `1px solid ${theme.border.primary}`,
         borderRadius: '16px',
-        padding: '30px',
+        padding: isMobile ? '20px' : '30px',
         boxShadow: theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)'
     };
 
     const activityItemStyles = {
         display: 'flex',
         alignItems: 'center',
-        padding: '15px 0',
-        borderBottom: `1px solid ${theme.border.primary}`
+        padding: isMobile ? '12px 0' : '15px 0',
+        borderBottom: `1px solid ${theme.border.primary}`,
+        flexDirection: isMobile ? 'column' : 'row',
+        textAlign: isMobile ? 'center' : 'left',
+        gap: isMobile ? '10px' : '0'
     };
 
     const activityIconStyles = {
-        width: '40px',
-        height: '40px',
+        width: isMobile ? '35px' : '40px',
+        height: isMobile ? '35px' : '40px',
         borderRadius: '50%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: '15px',
-        fontSize: '18px',
-        fontWeight: '600'
+        marginRight: isMobile ? '0' : '15px',
+        fontSize: isMobile ? '16px' : '18px',
+        fontWeight: '600',
+        flexShrink: 0
+    };
+
+    const activityContentStyles = {
+        flex: 1,
+        minWidth: 0, // Allows text to truncate properly
+        width: isMobile ? '100%' : 'auto'
+    };
+
+    const activityStudentStyles = {
+        fontWeight: '600',
+        color: theme.text.primary,
+        marginBottom: '4px',
+        fontSize: isMobile ? '15px' : '16px'
+    };
+
+    const activityMessageStyles = {
+        color: theme.text.secondary,
+        fontSize: isMobile ? '13px' : '14px',
+        wordBreak: 'break-word'
+    };
+
+    const activityTimeStyles = {
+        color: theme.text.secondary,
+        fontSize: '12px',
+        flexShrink: 0,
+        marginTop: isMobile ? '5px' : '0'
     };
 
     const getActivityIcon = (type) => {
@@ -211,29 +264,40 @@ function Home() {
             case 'rating_update': return { icon: '📈', bg: theme.button.success.background };
             case 'new_student': return { icon: '👤', bg: theme.button.primary.background };
             case 'contest': return { icon: '🏆', bg: theme.button.warning.background };
-            default: return { bg: theme.button.secondary.background };
+            default: return { icon: '📝', bg: theme.button.secondary.background };
         }
     };
 
     const quickActionStyles = {
         display: 'flex',
-        gap: '20px',
+        gap: isMobile ? '15px' : '20px',
         justifyContent: 'center',
         flexWrap: 'wrap',
-        marginTop: '40px'
+        marginTop: '40px',
+        flexDirection: isMobile ? 'column' : 'row',
+        alignItems: 'center'
     };
 
     const actionButtonStyles = {
-        padding: '12px 24px',
+        padding: isMobile ? '14px 24px' : '12px 24px',
         border: 'none',
         borderRadius: '8px',
-        fontSize: '16px',
+        fontSize: isMobile ? '15px' : '16px',
         fontWeight: '500',
         textDecoration: 'none',
         transition: 'all 0.2s ease',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '8px'
+        justifyContent: 'center',
+        gap: '8px',
+        width: isMobile ? '100%' : 'auto',
+        maxWidth: isMobile ? '300px' : 'none',
+        textAlign: 'center'
+    };
+
+    const topPerformerCardStyles = {
+        ...statCardStyles,
+        gridColumn: isMobile ? 'span 2' : 'auto'
     };
 
     if (loading) {
@@ -257,54 +321,66 @@ function Home() {
                         to="/students" 
                         style={ctaButtonStyles}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = 'rgba(255,255,255,0.3)';
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 8px 25px rgba(0,0,0,0.2)';
+                            if (!isMobile) {
+                                e.target.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                                e.target.style.transform = 'translateY(-2px)';
+                                e.target.style.boxShadow = '0 8px 25px rgba(0,0,0,0.2)';
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
-                            e.target.style.transform = 'translateY(0)';
-                            e.target.style.boxShadow = 'none';
+                            if (!isMobile) {
+                                e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                                e.target.style.transform = 'translateY(0)';
+                                e.target.style.boxShadow = 'none';
+                            }
                         }}
                     >
                         View All Students
                     </Link>
                 </div>
                 
-                {/* Floating Elements */}
-                <div style={{
-                    position: 'absolute',
-                    top: '20%',
-                    left: '10%',
-                    fontSize: '2rem',
-                    opacity: 0.1,
-                    animation: 'float 6s ease-in-out infinite'
-                }}>💻</div>
-                <div style={{
-                    position: 'absolute',
-                    bottom: '30%',
-                    right: '15%',
-                    fontSize: '1.5rem',
-                    opacity: 0.1,
-                    animation: 'float 4s ease-in-out infinite reverse'
-                }}>📊</div>
+                {/* Floating Elements - Hidden on mobile for better performance */}
+                {!isMobile && (
+                    <>
+                        <div style={{
+                            position: 'absolute',
+                            top: '20%',
+                            left: '10%',
+                            fontSize: '2rem',
+                            opacity: 0.1,
+                            animation: 'float 6s ease-in-out infinite'
+                        }}>💻</div>
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '30%',
+                            right: '15%',
+                            fontSize: '1.5rem',
+                            opacity: 0.1,
+                            animation: 'float 4s ease-in-out infinite reverse'
+                        }}>📊</div>
+                    </>
+                )}
             </section>
 
             {/* Main Content */}
             <main style={mainContentStyles}>
                 {/* Statistics Cards */}
-                <section style={{ marginBottom: '60px' }}>
-                    <h2 style={sectionTitleStyles}> Dashboard Overview</h2>
+                <section style={{ marginBottom: isMobile ? '40px' : '60px' }}>
+                    <h2 style={sectionTitleStyles}>Dashboard Overview</h2>
                     <div style={statsGridStyles}>
                         <div 
                             style={statCardStyles}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                }
                             }}
                         >
                             <div style={statNumberStyles}>{stats.totalStudents}</div>
@@ -314,12 +390,16 @@ function Home() {
                         <div 
                             style={statCardStyles}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                }
                             }}
                         >
                             <div style={statNumberStyles}>{stats.activeStudents}</div>
@@ -329,12 +409,16 @@ function Home() {
                         <div 
                             style={statCardStyles}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                }
                             }}
                         >
                             <div style={statNumberStyles}>{stats.avgRating}</div>
@@ -343,21 +427,39 @@ function Home() {
 
                         {stats.topPerformer && (
                             <div 
-                                style={statCardStyles}
+                                style={{
+                                    ...statCardStyles,
+                                    gridColumn: isMobile ? 'span 2' : 'auto'
+                                }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-5px)';
-                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                    if (!isMobile) {
+                                        e.currentTarget.style.transform = 'translateY(-5px)';
+                                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                    }
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                    if (!isMobile) {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                    }
                                 }}
                             >
-                                <div style={{ fontSize: '1.5rem', marginBottom: '10px' }}>🏆</div>
-                                <div style={{ fontSize: '1.2rem', fontWeight: '600', color: theme.text.primary, marginBottom: '5px' }}>
+                                <div style={{ fontSize: isMobile ? '1.1rem' : '1.5rem', marginBottom: '8px' }}>🏆</div>
+                                <div style={{ 
+                                    fontSize: isMobile ? '14px' : '1.2rem', 
+                                    fontWeight: '600', 
+                                    color: theme.text.primary, 
+                                    marginBottom: '4px',
+                                    lineHeight: '1.3'
+                                }}>
                                     {stats.topPerformer.name}
                                 </div>
-                                <div style={{ color: theme.button.warning.background, fontWeight: '600' }}>
+                                <div style={{ 
+                                    color: theme.button.warning.background, 
+                                    fontWeight: '600',
+                                    fontSize: isMobile ? '13px' : '16px',
+                                    marginBottom: isMobile ? '4px' : '6px'
+                                }}>
                                     {stats.topPerformer.rating} Rating
                                 </div>
                                 <div style={statLabelStyles}>Top Performer</div>
@@ -367,18 +469,22 @@ function Home() {
                 </section>
 
                 {/* Features Section */}
-                <section style={{ marginBottom: '60px' }}>
+                <section style={{ marginBottom: isMobile ? '40px' : '60px' }}>
                     <h2 style={sectionTitleStyles}>Key Features</h2>
                     <div style={featuresGridStyles}>
                         <div 
                             style={featureCardStyles}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                }
                             }}
                         >
                             <span style={featureIconStyles}>📈</span>
@@ -391,8 +497,10 @@ function Home() {
                         <div 
                             style={featureCardStyles}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                }
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.transform = 'translateY(0)';
@@ -409,12 +517,16 @@ function Home() {
                         <div 
                             style={featureCardStyles}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                if (!isMobile) {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = theme.card.shadow || '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                }
                             }}
                         >
                             <span style={featureIconStyles}>⚙️</span>
@@ -443,21 +555,25 @@ function Home() {
                                     <div style={{ ...activityIconStyles, backgroundColor: bg, color: 'white' }}>
                                         {icon}
                                     </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: '600', color: theme.text.primary, marginBottom: '4px' }}>
+                                    <div style={activityContentStyles}>
+                                        <div style={activityStudentStyles}>
                                             {activity.student}
                                         </div>
-                                        <div style={{ color: theme.text.secondary, fontSize: '14px' }}>
+                                        <div style={activityMessageStyles}>
                                             {activity.message}
                                         </div>
                                     </div>
-                                    <div style={{ color: theme.text.secondary, fontSize: '12px' }}>
+                                    <div style={activityTimeStyles}>
                                         {activity.time}
                                     </div>
                                 </div>
                             );
                         }) : (
-                            <div style={{ textAlign: 'center', padding: '40px', color: theme.text.secondary }}>
+                            <div style={{ 
+                                textAlign: 'center', 
+                                padding: isMobile ? '30px 20px' : '40px', 
+                                color: theme.text.secondary 
+                            }}>
                                 No recent activity to display
                             </div>
                         )}
@@ -474,12 +590,16 @@ function Home() {
                             color: theme.button.primary.text
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.button.primary.hover;
-                            e.target.style.transform = 'translateY(-2px)';
+                            if (!isMobile) {
+                                e.target.style.backgroundColor = theme.button.primary.hover;
+                                e.target.style.transform = 'translateY(-2px)';
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = theme.button.primary.background;
-                            e.target.style.transform = 'translateY(0)';
+                            if (!isMobile) {
+                                e.target.style.backgroundColor = theme.button.primary.background;
+                                e.target.style.transform = 'translateY(0)';
+                            }
                         }}
                     >
                         Add New Student
@@ -493,12 +613,16 @@ function Home() {
                             color: theme.button.warning.text
                         }}
                         onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = theme.button.warning.hover;
-                            e.target.style.transform = 'translateY(-2px)';
+                            if (!isMobile) {
+                                e.target.style.backgroundColor = theme.button.warning.hover;
+                                e.target.style.transform = 'translateY(-2px)';
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = theme.button.warning.background;
-                            e.target.style.transform = 'translateY(0)';
+                            if (!isMobile) {
+                                e.target.style.backgroundColor = theme.button.warning.background;
+                                e.target.style.transform = 'translateY(0)';
+                            }
                         }}
                     >
                         Admin Dashboard
@@ -510,6 +634,12 @@ function Home() {
                 @keyframes float {
                     0%, 100% { transform: translateY(0px); }
                     50% { transform: translateY(-20px); }
+                }
+                
+                @media (max-width: 480px) {
+                    .stats-grid {
+                        grid-template-columns: 1fr 1fr;
+                    }
                 }
             `}</style>
         </div>
