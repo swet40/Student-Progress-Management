@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/students', require('./routes/students'));
 
 // Database connection
+console.log('🔍 MONGO_URI being used:', process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI || 'fallback-url')
     .then(() => console.log("MongoDB Connected"))
     .catch(err => console.log("Error:", err));
