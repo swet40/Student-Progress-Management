@@ -66,100 +66,11 @@ npm run dev
 
 ### Environment Variables
 ```env
-🚀 Detailed Setup Guide
-📋 Prerequisites
-Before setting up the project, ensure you have:
-
-Node.js (v16 or higher) - Download here
-npm or yarn package manager
-Git for version control
-MongoDB Atlas account (free) - Sign up here
-
-🛠 Step-by-Step Installation
-1. Clone and Setup Project
-bash# Clone the repository
-git clone https://github.com/yourusername/student-progress-system.git
-cd student-progress-system
-
-# Install dependencies for both frontend and backend
-npm run install-all
-# OR manually:
-# cd backend && npm install
-# cd ../frontend && npm install
-2. MongoDB Atlas Setup (Cloud Database)
-Option A: MongoDB Atlas (Recommended)
-
-Create MongoDB Atlas Account
-
-Go to MongoDB Atlas
-Sign up for a free account
-Verify your email
-
-
-Create a New Cluster
-
-Click "Create a New Cluster"
-Choose "Shared" (Free tier)
-Select your preferred cloud provider and region
-Click "Create Cluster" (takes 1-3 minutes)
-
-
-Configure Database Access
-
-Go to "Database Access" in the left sidebar
-Click "Add New Database User"
-Choose "Password" authentication
-Enter username and password (save these!)
-Set user privileges to "Read and write to any database"
-Click "Add User"
-
-
-Configure Network Access
-
-Go to "Network Access" in the left sidebar
-Click "Add IP Address"
-Choose "Allow Access from Anywhere" (for development)
-Or add your specific IP address
-Click "Confirm"
-
-
-Get Connection String
-
-Go to "Clusters" and click "Connect"
-Choose "Connect your application"
-Copy the connection string
-It looks like: mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/<dbname>?retryWrites=true&w=majority
-
-
-
-Option B: Local MongoDB (Alternative)
-bash# Install MongoDB locally (Ubuntu/Debian)
-sudo apt-get install mongodb
-
-# Start MongoDB service
-sudo systemctl start mongod
-
-# Use local connection string:
-# MONGO_URI=mongodb://localhost:27017/student_progress
-3. Environment Configuration
-
-Backend Environment Setup
-
-bashcd backend
-cp .env.example .env
-
-Edit .env file with your actual values:
-
-env# Replace with your MongoDB Atlas connection string
-MONGO_URI=mongodb+srv://your_username:your_password@your_cluster.mongodb.net/student_progress?retryWrites=true&w=majority
-
-# Gmail configuration (see email setup below)
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
-
-# Other settings
+MONGODB_URI=mongodb+srv://your_username:your_password@your_cluster.mongodb.net/student_progress?retryWrites=true&w=majority
 PORT=5000
 NODE_ENV=development
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
 ```
 
 [Demo Video](https://www.youtube.com/watch?v=of81xyCHBtU)
