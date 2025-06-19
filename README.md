@@ -48,9 +48,8 @@ cd student-progress-management
 ```bash
 cd server
 npm install
-cp .env.example .env
 # Configure your environment variables in .env
-npm run dev
+nodemon server.js
 ```
 
 3. **Frontend Setup**
