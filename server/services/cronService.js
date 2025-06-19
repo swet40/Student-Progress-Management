@@ -30,7 +30,7 @@ const emailService = require('./emailService');
 
         // Create and start the cron job
         this.cronJob = cron.schedule(schedule, async () => {
-            console.log('🕐 Cron job started: Syncing Codeforces data...');
+            console.log('Cron job started: Syncing Codeforces data...');
             await this.syncAllStudentsData();
         }, {
             scheduled: false, // Don't start immediately
@@ -41,12 +41,12 @@ const emailService = require('./emailService');
         this.isRunning = true;
         this.updateNextRunTime();
 
-        console.log(`✅ Cron job started with schedule: ${schedule}`);
-        console.log(`📅 Next run time: ${this.nextRunTime}`);
+        console.log(`Cron job started with schedule: ${schedule}`);
+        console.log(`Next run time: ${this.nextRunTime}`);
         
         return true;
         } catch (error) {
-        console.error('❌ Error starting cron job:', error.message);
+        console.error(' Error starting cron job:', error.message);
         return false;
         }
     }
@@ -60,17 +60,17 @@ const emailService = require('./emailService');
         }
         this.isRunning = false;
         this.nextRunTime = null;
-        console.log('🛑 Cron job stopped');
+        console.log('Cron job stopped');
     }
 
     // Manually trigger sync
     async manualSync() {
         if (this.syncInProgress) {
-        console.log('⏳ Sync already in progress...');
+        console.log('Sync already in progress...');
         return { success: false, message: 'Sync already in progress' };
         }
 
-        console.log('🔄 Manual sync triggered...');
+        console.log('Manual sync triggered...');
         const result = await this.syncAllStudentsData();
         return result;
     }
@@ -78,7 +78,7 @@ const emailService = require('./emailService');
     // Main sync function
     async syncAllStudentsData() {
         if (this.syncInProgress) {
-        console.log('⏳ Sync already in progress, skipping...');
+        console.log('Sync already in progress, skipping...');
         return { success: false, message: 'Sync already in progress' };
         }
 
@@ -87,7 +87,7 @@ const emailService = require('./emailService');
         const startTime = Date.now();
 
         try {
-        console.log('📊 Starting bulk sync of all student data...');
+        console.log(' Starting bulk sync of all student data...');
         
         // Get all students with Codeforces handles
         const students = await Student.find({ 
@@ -107,7 +107,7 @@ const emailService = require('./emailService');
         // Process each student
         for (let i = 0; i < students.length; i++) {
             const student = students[i];
-            console.log(`🔄 Syncing ${i + 1}/${students.length}: ${student.name} (${student.codeforcesHandle})`);
+            console.log(`Syncing ${i + 1}/${students.length}: ${student.name} (${student.codeforcesHandle})`);
 
             try {
             // Get comprehensive data (rating + contest + problem data)
@@ -152,12 +152,12 @@ const emailService = require('./emailService');
                 }
 
                 results.successful++;
-                console.log(`✅ Successfully synced ${student.name}`);
+                console.log(` Successfully synced ${student.name}`);
             } else {
                 throw new Error('No data received from Codeforces API');
             }
             } catch (error) {
-            console.error(`❌ Failed to sync ${student.name}:`, error.message);
+            console.error(`Failed to sync ${student.name}:`, error.message);
             results.failed++;
             results.errors.push({
                 student: student.name,
@@ -173,23 +173,23 @@ const emailService = require('./emailService');
         }
 
         const duration = (Date.now() - startTime) / 1000;
-        console.log(`🎉 Sync completed in ${duration.toFixed(2)}s`);
-        console.log(`📈 Results: ${results.successful} successful, ${results.failed} failed`);
-        console.log(`⚠️  Inactive students: ${results.inactiveStudents.length}`);
+        console.log(` Sync completed in ${duration.toFixed(2)}s`);
+        console.log(` Results: ${results.successful} successful, ${results.failed} failed`);
+        console.log(`  Inactive students: ${results.inactiveStudents.length}`);
 
         // Send email reminders to inactive students
         if (results.inactiveStudents.length > 0) {
-            console.log('📧 Sending reminder emails to inactive students...');
+            console.log(' Sending reminder emails to inactive students...');
             const emailResults = await emailService.sendBulkReminderEmails(results.inactiveStudents);
             results.emailResults = emailResults;
-            console.log(`📧 Email results: ${emailResults.sent} sent, ${emailResults.failed} failed, ${emailResults.skipped} skipped`);
+            console.log(` Email results: ${emailResults.sent} sent, ${emailResults.failed} failed, ${emailResults.skipped} skipped`);
         }
 
         this.updateNextRunTime();
         return { success: true, ...results, duration };
 
         } catch (error) {
-        console.error('💥 Critical error during sync:', error);
+        console.error(' Critical error during sync:', error);
         return { 
             success: false, 
             message: error.message,

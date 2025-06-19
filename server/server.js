@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/students', require('./routes/students'));
 
 // Database connection
-console.log('🔍 MONGO_URI being used:', process.env.MONGO_URI);
+console.log(' MONGO_URI being used:', process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI || 'fallback-url')
     .then(() => console.log("MongoDB Connected"))
     .catch(err => console.log("Error:", err));
@@ -31,7 +31,7 @@ mongoose.connect(process.env.MONGO_URI || 'fallback-url')
         });
 
         cronService.start();
-        console.log('🤖 Cron service initialized');
+        console.log('Cron service initialized');
 
     app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
