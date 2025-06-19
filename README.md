@@ -10,7 +10,7 @@ A comprehensive MERN stack application for tracking and analyzing competitive pr
 - Smart Notifications : Automatic email alerts for inactive students (7+ days)
 - Responsive Design : Mobile-first design with dark/light theme toggle
 
-## 🛠 Tech Stack
+## Tech Stack
 
 **Frontend:**
 - React.js 18+ with Hooks and Context API
