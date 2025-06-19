@@ -4,12 +4,11 @@ A comprehensive MERN stack application for tracking and analyzing competitive pr
 
 ## Key Features
 
-- Student Management**: Complete CRUD operations with CSV export functionality
-- Real-time Analytics**: Interactive charts for contest history and problem-solving statistics
-- Automated Sync**: Daily Codeforces data synchronization with customizable scheduling
-- Smart Notifications**: Automatic email alerts for inactive students (7+ days)
-- Responsive Design**: Mobile-first design with dark/light theme toggle
-- Secure**: JWT authentication with role-based access control
+- Student Management : Complete CRUD operations with CSV export functionality
+- Real-time Analytics : Interactive charts for contest history and problem-solving statistics
+- Automated Sync : Daily Codeforces data synchronization with customizable scheduling
+- Smart Notifications : Automatic email alerts for inactive students (7+ days)
+- Responsive Design : Mobile-first design with dark/light theme toggle
 
 ## 🛠 Tech Stack
 
