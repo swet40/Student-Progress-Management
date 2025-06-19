@@ -2,7 +2,7 @@
 
 A comprehensive MERN stack application for tracking and analyzing competitive programming students' progress on Codeforces. Features automated data synchronization, real-time analytics, and intelligent inactivity detection.
 
-## 🎯 Key Features
+## Key Features
 
 - ** Student Management**: Complete CRUD operations with CSV export functionality
 - ** Real-time Analytics**: Interactive charts for contest history and problem-solving statistics
@@ -74,7 +74,7 @@ EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password
 ```
 
-[![Demo Video](https://www.youtube.com/watch?v=of81xyCHBtU)
+[Demo Video](https://www.youtube.com/watch?v=of81xyCHBtU)
 
 **Demo Highlights:**
 - Student table management with real-time operations
@@ -128,7 +128,7 @@ npm run test:integration
 ```
 
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
